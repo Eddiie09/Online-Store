@@ -1,3 +1,4 @@
+import { ShoppingBagIcon } from '@heroicons/react/24/solid'
 import React, { useEffect, useState, useContext } from 'react';
 import { ShoppingCartContext } from '../../Context';
 import ProductDetail from '../ProductDetail'; // Ajusta la ruta según tu estructura de carpetas
@@ -54,7 +55,7 @@ const Products = () => {
                   context.setCount(context.count + 1);
                 }}
               >
-                Add to Cart 🛒
+              <ShoppingBagIcon className="h-6 w-6 mx-auto text-gray-700" />
               </button>
             </div>
           </div>
