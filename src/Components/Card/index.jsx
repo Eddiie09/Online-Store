@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { ShoppingCartContext } from '../../Context';
 import ProductDetail from '../ProductDetail'; // Ajusta la ruta según tu estructura de carpetas
+import { PlusIcon } from '@heroicons/react/24/solid';
 
 const Products = () => {
   const context = useContext(ShoppingCartContext);
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState([]); // Estado correcto
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const handleProductClick = (product) => {
@@ -15,11 +16,24 @@ const Products = () => {
     setSelectedProduct(null);
   };
 
+  const addProductsToCart = (product) => {
+    context.setCartProducts([...context.cartProducts, product]);
+    context.setCount(context.count + 1);
+    console.log('CART:  ', context.cartProducts)
+  };
+
   useEffect(() => {
-    // Petición GET a la API
     fetch('https://fakestoreapi.com/products')
-      .then((response) => response.json())
-      .then((data) => setProducts(data))
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log('API response:', data); // Diagnóstico
+        setProducts(data); // Corrige el uso de setItems
+      })
       .catch((error) => console.error('Error fetching products:', error));
   }, []);
 
@@ -48,19 +62,22 @@ const Products = () => {
               </h3>
               <p className="text-sm text-gray-600">${product.price}</p>
               <button
-                className="bg-yellow-500 text-white text-sm font-medium py-2 rounded mt-4 hover:bg-yellow-600 transition-colors"
+                className="bg-yellow-500 text-white text-sm font-medium py-2 rounded mt-4 hover:bg-yellow-600 transition-colors flex items-center gap-2"
                 onClick={(e) => {
                   e.stopPropagation(); // Evita que se active el evento de abrir el modal
-                  context.setCount(context.count + 1);
+                  addProductsToCart(product);
                 }}
               >
+                <PlusIcon className="h-5 w-5" />
                 Add to Cart 🛒
               </button>
             </div>
           </div>
         ))}
       </div>
-      <ProductDetail product={selectedProduct} onClose={handleCloseModal} />
+      {selectedProduct && (
+        <ProductDetail product={selectedProduct} onClose={handleCloseModal} />
+      )}
     </div>
   );
 };
