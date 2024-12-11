@@ -1,7 +1,6 @@
-import { ShoppingBagIcon } from '@heroicons/react/24/solid';
+import { TrashIcon } from "@heroicons/react/24/solid";
 import React, { useEffect, useState, useContext } from 'react';
 import { ShoppingCartContext } from '../../Context';
-import ProductDetail from '../ProductDetail'; // Ajusta la ruta según tu estructura de carpetas
 import { PlusIcon } from '@heroicons/react/24/solid';
 
 const Products = () => {
@@ -20,12 +19,21 @@ const Products = () => {
   const addProductsToCart = (product) => {
     context.setCartProducts([...context.cartProducts, product]);
     context.setCount(context.count + 1);
-    context.openCheckoutSideMenu(); // Abre el menú lateral al añadir un producto
-    console.log('CART: ', context.cartProducts);
+    context.openCheckoutSideMenu();
+  };
+
+  const handleDelete = (id) => {
+    const filteredProducts = context.cartProducts.filter(
+      (product) => product.id !== id
+    );
+
+    // Actualiza el contador restando uno
+    context.setCount(context.count - 1);
+    context.setCartProducts(filteredProducts);
   };
 
   useEffect(() => {
-    fetch('https://fakestoreapi.com/products')
+    fetch("https://fakestoreapi.com/products")
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -33,10 +41,9 @@ const Products = () => {
         return response.json();
       })
       .then((data) => {
-        console.log('API response:', data);
         setProducts(data);
       })
-      .catch((error) => console.error('Error fetching products:', error));
+      .catch((error) => console.error("Error fetching products:", error));
   }, []);
 
   return (
@@ -49,7 +56,6 @@ const Products = () => {
             onClick={() => handleProductClick(product)}
             className="bg-white rounded-lg overflow-hidden shadow-md transform transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer"
           >
-            {/* Imagen del Producto */}
             <figure className="relative w-full h-48">
               <img
                 src={product.image}
@@ -57,7 +63,6 @@ const Products = () => {
                 className="w-full h-full object-contain bg-gray-50"
               />
             </figure>
-            {/* Información del Producto */}
             <div className="p-4 flex flex-col justify-between h-40">
               <h3 className="text-lg font-semibold text-gray-800 truncate">
                 {product.title}
@@ -82,7 +87,6 @@ const Products = () => {
       )}
       {context.isCheckoutSideMenuOpen && (
         <div className="fixed top-0 right-0 w-80 h-full bg-white shadow-lg z-50 flex flex-col">
-          {/* Encabezado del menú lateral */}
           <div className="flex justify-between items-center p-4 border-b">
             <h2 className="text-xl font-bold">Carrito de Compras</h2>
             <button
@@ -92,13 +96,12 @@ const Products = () => {
               ✖
             </button>
           </div>
-          {/* Contenido desplazable del carrito */}
           <div className="flex-1 overflow-y-auto p-4">
             {context.cartProducts.length > 0 ? (
               <ul>
-                {context.cartProducts.map((product, index) => (
+                {context.cartProducts.map((product) => (
                   <li
-                    key={index}
+                    key={product.id}
                     className="flex items-center gap-4 py-2 border-b"
                   >
                     <img
@@ -110,6 +113,12 @@ const Products = () => {
                       <p className="text-sm font-medium">{product.title}</p>
                       <p className="text-xs text-gray-600">${product.price}</p>
                     </div>
+                    <button
+                      onClick={() => handleDelete(product.id)}
+                      className="text-red-500 hover:text-red-700 transition"
+                    >
+                      <TrashIcon className="h-5 w-5" />
+                    </button>
                   </li>
                 ))}
               </ul>

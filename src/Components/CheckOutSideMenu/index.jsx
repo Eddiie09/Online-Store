@@ -1,5 +1,21 @@
+import { useContext } from "react";
+import { ShoppingCartContext } from "../../Context"; // Ajusta la ruta según tu proyecto
+
 const CheckOutSideMenu = ({ isVisible, onClose }) => {
+  const context = useContext(ShoppingCartContext); // Asegúrate de tener acceso al contexto
+
   if (!isVisible) return null;
+
+  const handleDelete = (id) => {
+    const filteredProducts = context.cartProducts.filter(
+      (product) => product.id !== id
+    );
+    
+    // Actualiza el contador de productos en el carrito
+    context.setCount(filteredProducts.length); // Actualiza el contador al número actual de productos en el carrito
+    context.setCartProducts(filteredProducts);
+  };
+  
 
   return (
     <div
@@ -23,8 +39,32 @@ const CheckOutSideMenu = ({ isVisible, onClose }) => {
         {/* Contenido del menú */}
         <div className="menu-content mt-8">
           <h2 className="text-lg font-semibold mb-4">Carrito de Compras</h2>
-          {/* Aquí puedes mapear y renderizar los productos */}
-          <p className="text-gray-500">Tu carrito está vacío.</p>
+          {context.cartProducts.length > 0 ? (
+            <ul>
+              {context.cartProducts.map((product) => (
+                <li
+                  key={product.id}
+                  className="flex justify-between items-center mb-4 border-b pb-2"
+                >
+                  <div>
+                    <p className="text-sm font-medium text-gray-800">
+                      {product.title}
+                    </p>
+                    <p className="text-sm text-gray-500">${product.price}</p>
+                  </div>
+                  <button
+                    onClick={() => handleDelete(product.id)}
+                    className="text-red-500 hover:text-red-700 transition"
+                    aria-label={`Remove ${product.title} from cart`}
+                  >
+                    Eliminar
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-500">Tu carrito está vacío.</p>
+          )}
         </div>
       </div>
     </div>
@@ -32,4 +72,3 @@ const CheckOutSideMenu = ({ isVisible, onClose }) => {
 };
 
 export default CheckOutSideMenu;
-
