@@ -11,6 +11,19 @@ export const ShoppingCartProvider = ({ children }) => {
     // Estado para los productos en el carrito
     const [cartProducts, setCartProducts] = useState([]); // Inicializado como array
 
+    // Estado para controlar la visibilidad del checkout side menu
+    const [isCheckoutSideMenuOpen, setIsCheckoutSideMenuOpen] = useState(false);
+
+    // Función para abrir el checkout side menu
+    const openCheckoutSideMenu = () => {
+        setIsCheckoutSideMenuOpen(true);
+    };
+
+    // Función para cerrar el checkout side menu
+    const closeCheckoutSideMenu = () => {
+        setIsCheckoutSideMenuOpen(false);
+    };
+
     return (
         <ShoppingCartContext.Provider
             value={{
@@ -18,9 +31,13 @@ export const ShoppingCartProvider = ({ children }) => {
                 setCount, // Función para actualizar el contador
                 cartProducts, // Lista de productos en el carrito
                 setCartProducts, // Función para actualizar la lista de productos
+                isCheckoutSideMenuOpen, // Estado del menú lateral
+                openCheckoutSideMenu, // Función para abrir el menú lateral
+                closeCheckoutSideMenu, // Función para cerrar el menú lateral
             }}
         >
             {children}
         </ShoppingCartContext.Provider>
     );
 };
+

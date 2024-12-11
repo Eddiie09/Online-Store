@@ -1,3 +1,4 @@
+import { ShoppingBagIcon } from '@heroicons/react/24/solid';
 import React, { useEffect, useState, useContext } from 'react';
 import { ShoppingCartContext } from '../../Context';
 import ProductDetail from '../ProductDetail'; // Ajusta la ruta según tu estructura de carpetas
@@ -5,7 +6,7 @@ import { PlusIcon } from '@heroicons/react/24/solid';
 
 const Products = () => {
   const context = useContext(ShoppingCartContext);
-  const [products, setProducts] = useState([]); // Estado correcto
+  const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const handleProductClick = (product) => {
@@ -19,7 +20,8 @@ const Products = () => {
   const addProductsToCart = (product) => {
     context.setCartProducts([...context.cartProducts, product]);
     context.setCount(context.count + 1);
-    console.log('CART:  ', context.cartProducts)
+    context.openCheckoutSideMenu(); // Abre el menú lateral al añadir un producto
+    console.log('CART: ', context.cartProducts);
   };
 
   useEffect(() => {
@@ -31,8 +33,8 @@ const Products = () => {
         return response.json();
       })
       .then((data) => {
-        console.log('API response:', data); // Diagnóstico
-        setProducts(data); // Corrige el uso de setItems
+        console.log('API response:', data);
+        setProducts(data);
       })
       .catch((error) => console.error('Error fetching products:', error));
   }, []);
@@ -77,6 +79,45 @@ const Products = () => {
       </div>
       {selectedProduct && (
         <ProductDetail product={selectedProduct} onClose={handleCloseModal} />
+      )}
+      {context.isCheckoutSideMenuOpen && (
+        <div className="fixed top-0 right-0 w-80 h-full bg-white shadow-lg z-50 flex flex-col">
+          {/* Encabezado del menú lateral */}
+          <div className="flex justify-between items-center p-4 border-b">
+            <h2 className="text-xl font-bold">Carrito de Compras</h2>
+            <button
+              onClick={context.closeCheckoutSideMenu}
+              className="text-gray-500 hover:text-gray-800"
+            >
+              ✖
+            </button>
+          </div>
+          {/* Contenido desplazable del carrito */}
+          <div className="flex-1 overflow-y-auto p-4">
+            {context.cartProducts.length > 0 ? (
+              <ul>
+                {context.cartProducts.map((product, index) => (
+                  <li
+                    key={index}
+                    className="flex items-center gap-4 py-2 border-b"
+                  >
+                    <img
+                      src={product.image}
+                      alt={product.title}
+                      className="w-12 h-12 object-cover"
+                    />
+                    <div>
+                      <p className="text-sm font-medium">{product.title}</p>
+                      <p className="text-xs text-gray-600">${product.price}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-gray-600">Tu carrito está vacío.</p>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

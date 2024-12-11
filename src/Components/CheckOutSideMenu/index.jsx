@@ -1,4 +1,4 @@
-cconst CheckOutSideMenu = ({ isVisible, onClose }) => {
+const CheckOutSideMenu = ({ isVisible, onClose }) => {
   if (!isVisible) return null;
 
   return (
