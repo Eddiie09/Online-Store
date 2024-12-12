@@ -1,8 +1,8 @@
 import { useContext } from "react";
-import { ShoppingCartContext } from "../../Context"; // Ajusta la ruta según tu proyecto
+import { ShoppingCartContext } from "../../Context";
 
 const CheckOutSideMenu = ({ isVisible, onClose }) => {
-  const context = useContext(ShoppingCartContext); // Asegúrate de tener acceso al contexto
+  const context = useContext(ShoppingCartContext);
 
   if (!isVisible) return null;
 
@@ -10,21 +10,24 @@ const CheckOutSideMenu = ({ isVisible, onClose }) => {
     const filteredProducts = context.cartProducts.filter(
       (product) => product.id !== id
     );
-    
-    // Actualiza el contador de productos en el carrito
-    context.setCount(filteredProducts.length); // Actualiza el contador al número actual de productos en el carrito
+    context.setCount(filteredProducts.length);
     context.setCartProducts(filteredProducts);
   };
-  
+
+  // Cálculo del precio total
+  const totalPrice = context.cartProducts.reduce(
+    (total, product) => total + product.price,
+    0
+  );
 
   return (
     <div
       className="checkout-menu-overlay fixed top-0 right-0 w-full h-full bg-black bg-opacity-50 flex justify-end z-50"
       onClick={onClose}
-      aria-hidden={!isVisible} // Mejora de accesibilidad
+      aria-hidden={!isVisible}
     >
       <div
-        className="checkout-menu-card bg-white w-80 h-full shadow-lg p-4"
+        className="checkout-menu-card bg-white w-80 h-full shadow-lg p-4 flex flex-col justify-between"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Botón de cierre */}
@@ -36,8 +39,8 @@ const CheckOutSideMenu = ({ isVisible, onClose }) => {
           &times;
         </button>
 
-        {/* Contenido del menú */}
-        <div className="menu-content mt-8">
+        {/* Contenido principal */}
+        <div className="menu-content mt-8 flex-grow">
           <h2 className="text-lg font-semibold mb-4">Carrito de Compras</h2>
           {context.cartProducts.length > 0 ? (
             <ul>

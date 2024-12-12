@@ -2,6 +2,7 @@ import { TrashIcon } from "@heroicons/react/24/solid";
 import React, { useEffect, useState, useContext } from 'react';
 import { ShoppingCartContext } from '../../Context';
 import { PlusIcon } from '@heroicons/react/24/solid';
+import ProductDetail from '../ProductDetail'; // Ajusta la ruta si es necesario
 
 const Products = () => {
   const context = useContext(ShoppingCartContext);
@@ -27,7 +28,6 @@ const Products = () => {
       (product) => product.id !== id
     );
 
-    // Actualiza el contador restando uno
     context.setCount(context.count - 1);
     context.setCartProducts(filteredProducts);
   };
@@ -71,7 +71,7 @@ const Products = () => {
               <button
                 className="bg-yellow-500 text-white text-sm font-medium py-2 rounded mt-4 hover:bg-yellow-600 transition-colors flex items-center gap-2"
                 onClick={(e) => {
-                  e.stopPropagation(); // Evita que se active el evento de abrir el modal
+                  e.stopPropagation();
                   addProductsToCart(product);
                 }}
               >
@@ -126,6 +126,18 @@ const Products = () => {
               <p className="text-sm text-gray-600">Tu carrito está vacío.</p>
             )}
           </div>
+          {/* Total del carrito */}
+          {context.cartProducts.length > 0 && (
+            <div className="p-4 border-t flex justify-between items-center">
+              <p className="text-lg font-bold">Total:</p>
+              <p className="text-lg font-bold">
+                $
+                {context.cartProducts
+                  .reduce((total, product) => total + product.price, 0)
+                  .toFixed(2)}
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>
