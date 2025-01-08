@@ -18,6 +18,9 @@ export const ShoppingCartProvider = ({ children }) => {
         setIsCheckoutSideMenuOpen(false);
     };
 
+    // Shopping cart ° Order
+    const [order, setOrder] = useState([])
+
     // Usar la función totalPrice para calcular el precio total
     const total = totalPrice(cartProducts); // Cambiado a totalPrice en lugar de calculateTotalPrice
 
@@ -32,6 +35,8 @@ export const ShoppingCartProvider = ({ children }) => {
                 openCheckoutSideMenu,
                 closeCheckoutSideMenu,
                 totalPrice: total, // Aquí se asigna el total calculado
+                order,
+                setOrder
             }}
         >
             {children}

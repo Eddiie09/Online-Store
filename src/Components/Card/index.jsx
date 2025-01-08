@@ -1,8 +1,11 @@
 import { TrashIcon } from "@heroicons/react/24/solid";
-import React, { useEffect, useState, useContext } from 'react';
-import { ShoppingCartContext } from '../../Context';
-import { PlusIcon } from '@heroicons/react/24/solid';
-import ProductDetail from '../ProductDetail'; // Ajusta la ruta si es necesario
+import React, { useEffect, useState, useContext } from "react";
+import { ShoppingCartContext } from "../../Context";
+import { PlusIcon } from "@heroicons/react/24/solid";
+import ProductDetail from "../ProductDetail";
+import { totalPrice } from "../../Utils";
+import { Link } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 
 const Products = () => {
   const context = useContext(ShoppingCartContext);
@@ -27,9 +30,26 @@ const Products = () => {
     const filteredProducts = context.cartProducts.filter(
       (product) => product.id !== id
     );
-
-    context.setCount(context.count - 1);
     context.setCartProducts(filteredProducts);
+    context.setCount(context.count - 1);
+  };
+
+  const handleCheckout = () => {
+    if (context.cartProducts.length === 0) {
+      console.error("El carrito está vacío. No se puede procesar el checkout.");
+      return;
+    }
+
+    const orderToAdd = {
+      date: new Date().toLocaleDateString("es-ES"),
+      products: context.cartProducts,
+      totalProducts: context.cartProducts.length,
+      totalPrice: totalPrice(context.cartProducts),
+    };
+
+    context.setOrder([...context.order, orderToAdd]);
+    context.setCartProducts([]); // Vaciar carrito después del checkout
+    context.setCount(0);
   };
 
   useEffect(() => {
@@ -40,9 +60,7 @@ const Products = () => {
         }
         return response.json();
       })
-      .then((data) => {
-        setProducts(data);
-      })
+      .then((data) => setProducts(data))
       .catch((error) => console.error("Error fetching products:", error));
   }, []);
 
@@ -52,8 +70,7 @@ const Products = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full max-w-7xl">
         {products.map((product) => (
           <div
-            key={product.id}
-            onClick={() => handleProductClick(product)}
+          key={uuidv4()} onClick={() => handleProductClick(product)}
             className="bg-white rounded-lg overflow-hidden shadow-md transform transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer"
           >
             <figure className="relative w-full h-48">
@@ -126,18 +143,25 @@ const Products = () => {
               <p className="text-sm text-gray-600">Tu carrito está vacío.</p>
             )}
           </div>
-          {/* Total del carrito */}
-          {context.cartProducts.length > 0 && (
-            <div className="p-4 border-t flex justify-between items-center">
+          <div className="p-4 border-t">
+            <div className="flex justify-between items-center mb-4">
               <p className="text-lg font-bold">Total:</p>
               <p className="text-lg font-bold">
-                $
-                {context.cartProducts
+                ${context.cartProducts
                   .reduce((total, product) => total + product.price, 0)
                   .toFixed(2)}
               </p>
             </div>
-          )}
+            <Link to='/my-orders/last'>
+            <button
+              onClick={handleCheckout}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg shadow-md text-center transition duration-300"
+            >
+              Checkout
+            </button>
+            </Link>
+           
+          </div>
         </div>
       )}
     </div>
