@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import { totalPrice } from '../Utils'; // Asegúrate de que la ruta sea correcta
 
 // Creación del contexto para el carrito de compras
@@ -21,6 +21,15 @@ export const ShoppingCartProvider = ({ children }) => {
     // Shopping cart ° Order
     const [order, setOrder] = useState([])
 
+    //Get products
+     const [items, setItems] = useState(null)
+
+     useEffect(() => {
+        fetch('https://fakestoreapi.com/products')
+        .then(response => response.json())
+        .then(data => setItems(data))
+      }, [])
+
     // Usar la función totalPrice para calcular el precio total
     const total = totalPrice(cartProducts); // Cambiado a totalPrice en lugar de calculateTotalPrice
 
@@ -36,7 +45,9 @@ export const ShoppingCartProvider = ({ children }) => {
                 closeCheckoutSideMenu,
                 totalPrice: total, // Aquí se asigna el total calculado
                 order,
-                setOrder
+                setOrder,
+                items,
+                setItems
             }}
         >
             {children}

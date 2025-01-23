@@ -1,15 +1,16 @@
 import { BrowserRouter } from 'react-router-dom';
 import { useRoutes } from 'react-router-dom';
-import { ShoppingCartProvider } from '../../Context'
+import { ShoppingCartProvider } from '../../Context';
 import Home from '../Home';
 import MyAccount from '../MyAccount';
 import MyOrder from '../MyOrder';
 import MyOrders from '../MyOrders';
 import NotFound from '../NotFound';
 import SignIn from '../SignIn';
-import Navbar from '../../Components/Navbar'
-import CheckOutSideMneu from '../../Components/CheckOutSideMenu'
+import Navbar from '../../Components/Navbar';
+import CheckOutSideMneu from '../../Components/CheckOutSideMenu';
 import './App.css';
+import { UserProvider } from '../../Components/UserContext';
 
 const routesConfig = [
   { path: '/', element: <Home /> },
@@ -25,14 +26,16 @@ const AppRoutes = () => useRoutes(routesConfig);
 
 const App = () => {
   return (
-    <ShoppingCartProvider>
-    <BrowserRouter>
-      <AppRoutes />
-      <Navbar />
-      <CheckOutSideMneu />
-    </BrowserRouter>
-    </ShoppingCartProvider>
+    <UserProvider>
+      <ShoppingCartProvider>
+        <BrowserRouter>
+          <AppRoutes />
+          <Navbar />
+          <CheckOutSideMneu />
+        </BrowserRouter>
+      </ShoppingCartProvider>
+    </UserProvider>
   );
 };
 
-export default App
+export default App;
