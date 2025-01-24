@@ -1,56 +1,61 @@
-import { createContext, useState, useEffect } from 'react';
-import { totalPrice } from '../Utils'; // Asegúrate de que la ruta sea correcta
+import { createContext, useState, useEffect } from "react";
+import { totalPrice } from "../Utils"; // Asegúrate de que la ruta sea correcta
 
 // Creación del contexto para el carrito de compras
 export const ShoppingCartContext = createContext();
 
-// Proveedor del contexto del carrito de compras
 export const ShoppingCartProvider = ({ children }) => {
-    const [count, setCount] = useState(0); // Inicializado como número
-    const [cartProducts, setCartProducts] = useState([]); // Inicializado como array
-    const [isCheckoutSideMenuOpen, setIsCheckoutSideMenuOpen] = useState(false);
+  const [count, setCount] = useState(0); // Inicializado como número
+  const [cartProducts, setCartProducts] = useState([]); // Inicializado como array
+  const [isCheckoutSideMenuOpen, setIsCheckoutSideMenuOpen] = useState(false);
 
-    const openCheckoutSideMenu = () => {
-        setIsCheckoutSideMenuOpen(true);
-    };
+  const openCheckoutSideMenu = () => {
+    setIsCheckoutSideMenuOpen(true);
+  };
 
-    const closeCheckoutSideMenu = () => {
-        setIsCheckoutSideMenuOpen(false);
-    };
+  const closeCheckoutSideMenu = () => {
+    setIsCheckoutSideMenuOpen(false);
+  };
 
-    // Shopping cart ° Order
-    const [order, setOrder] = useState([])
+  // Estado para las órdenes
+  const [order, setOrder] = useState([]);
 
-    //Get products
-     const [items, setItems] = useState(null)
+  // Función para agregar una nueva orden
+  const addOrder = (newOrder) => {
+    setOrder((prevOrders) => [...prevOrders, newOrder]);
+  };
 
-     useEffect(() => {
-        fetch('https://fakestoreapi.com/products')
-        .then(response => response.json())
-        .then(data => setItems(data))
-      }, [])
+  // Obtener productos de una API
+  const [items, setItems] = useState(null);
 
-    // Usar la función totalPrice para calcular el precio total
-    const total = totalPrice(cartProducts); // Cambiado a totalPrice en lugar de calculateTotalPrice
+  useEffect(() => {
+    fetch("https://fakestoreapi.com/products")
+      .then((response) => response.json())
+      .then((data) => setItems(data));
+  }, []);
 
-    return (
-        <ShoppingCartContext.Provider
-            value={{
-                count,
-                setCount,
-                cartProducts,
-                setCartProducts,
-                isCheckoutSideMenuOpen,
-                openCheckoutSideMenu,
-                closeCheckoutSideMenu,
-                totalPrice: total, // Aquí se asigna el total calculado
-                order,
-                setOrder,
-                items,
-                setItems
-            }}
-        >
-            {children}
-        </ShoppingCartContext.Provider>
-    );
+  // Usar la función totalPrice para calcular el precio total
+  const total = totalPrice(cartProducts);
+
+  return (
+    <ShoppingCartContext.Provider
+      value={{
+        count,
+        setCount,
+        cartProducts,
+        setCartProducts,
+        isCheckoutSideMenuOpen,
+        openCheckoutSideMenu,
+        closeCheckoutSideMenu,
+        totalPrice: total,
+        order,
+        setOrder,
+        addOrder, // Nueva función para registrar órdenes
+        items,
+        setItems,
+      }}
+    >
+      {children}
+    </ShoppingCartContext.Provider>
+  );
 };

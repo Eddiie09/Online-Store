@@ -1,9 +1,13 @@
 import React, { useContext } from "react";
 import Layout from "../../Components/Layout";
 import { ShoppingCartContext } from "../../Context";
+import { useNavigate } from "react-router-dom";
 
 function MyOrder() {
   const context = useContext(ShoppingCartContext);
+  const navigate = useNavigate();
+  const currentPath = window.location.pathname
+  console.log(currentPath)
 
   // Obtén la última orden
   const lastOrder = context.order?.slice(-1)[0];
@@ -12,6 +16,12 @@ function MyOrder() {
   const total = lastOrder
     ? lastOrder.products.reduce((sum, product) => sum + product.price, 0)
     : 0;
+
+  const handlePayment = () => {
+    // Realiza cualquier lógica adicional antes de redirigir
+    alert("Procesando el pago...");
+    navigate("/my-orders"); // Redirige a la página "My Orders"
+  };
 
   return (
     <Layout>
@@ -42,7 +52,7 @@ function MyOrder() {
               <p className="text-lg font-semibold">Total: ${total.toFixed(2)}</p>
               <button
                 className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                onClick={() => alert("Procesando el pago...")}
+                onClick={handlePayment} // Llama a la función de pago
               >
                 Pagar
               </button>
